@@ -45,6 +45,11 @@ health_checks() {
   assert_success
   assert_output --partial "pi-claude-code"
 
+  # Verify CLAUDE_CONFIG_DIR points to .ddev/pi/claude
+  run ddev exec -s pi printenv CLAUDE_CONFIG_DIR
+  assert_success
+  assert_output "/var/www/html/.ddev/pi/claude"
+
   # Verify telemetry and auto-updater environment variables
   run ddev exec -s pi printenv DISABLE_TELEMETRY
   assert_success

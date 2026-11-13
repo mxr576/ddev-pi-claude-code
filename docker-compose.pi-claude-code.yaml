@@ -2,6 +2,7 @@
 services:
   pi:
     environment:
+      CLAUDE_CONFIG_DIR: "/var/www/html/.ddev/pi/claude"
       PI_CLAUDE_CODE_VERSION: ${PI_CLAUDE_CODE_VERSION:-latest}
       DISABLE_TELEMETRY: "1"
       CLAUDE_CODE_ENABLE_TELEMETRY: "0"
