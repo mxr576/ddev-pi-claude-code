@@ -84,6 +84,31 @@ teardown() {
   health_checks
 }
 
+@test "version pinning via PI_CLAUDE_CODE_VERSION" {
+  set -eu -o pipefail
+  echo "# ddev add-on get ${DIR} with version pinning in $(pwd)" >&3
+  run ddev add-on get "${DIR}"
+  assert_success
+
+  # Pin specific valid version in .ddev/.env.pi (the env file for the pi service)
+  echo 'PI_CLAUDE_CODE_VERSION="2.1.322"' >> .ddev/.env.pi
+
+  run ddev restart -y
+  assert_success
+  run ddev start -y --profiles=pi
+  assert_success
+
+  # Verify environment variable inside container
+  run ddev exec -s pi printenv PI_CLAUDE_CODE_VERSION
+  assert_success
+  assert_output "2.1.322"
+
+  # Verify installed binary version
+  run ddev exec -s pi claude --version
+  assert_success
+  assert_output --partial "2.1.322"
+}
+
 # bats test_tags=release
 @test "install from release" {
   set -eu -o pipefail

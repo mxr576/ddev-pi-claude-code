@@ -27,20 +27,16 @@ if [ "${CURRENT_JSON_LINK}" != "${CONFIG_DIR}/.claude.json" ]; then
   ln -sf "${CONFIG_DIR}/.claude.json" "${HOME}/.claude.json"
 fi
 
-# Install/update @anthropic-ai/claude-code only if missing or if a specific version is requested
-SHOULD_INSTALL=0
-if ! command -v claude >/dev/null 2>&1; then
-  SHOULD_INSTALL=1
-elif [ "${TARGET_VERSION}" != "latest" ]; then
-  INSTALLED_VERSION="$(claude --version 2>/dev/null | awk '{print $NF}' || true)"
+# Ensure requested version of @anthropic-ai/claude-code is active
+if [ "${TARGET_VERSION}" != "latest" ]; then
+  INSTALLED_VERSION="$(claude --version 2>/dev/null | awk '{print $1}' || true)"
   if [ "${INSTALLED_VERSION}" != "${TARGET_VERSION}" ]; then
-    SHOULD_INSTALL=1
+    echo "[entrypoint.d] Updating @anthropic-ai/claude-code to pinned version ${TARGET_VERSION}..."
+    /usr/bin/npm install -g "@anthropic-ai/claude-code@${TARGET_VERSION}"
   fi
-fi
-
-if [ "${SHOULD_INSTALL}" -eq 1 ]; then
-  echo "[entrypoint.d] Installing @anthropic-ai/claude-code@${TARGET_VERSION}..."
-  /usr/bin/npm install -g "@anthropic-ai/claude-code@${TARGET_VERSION}"
+elif ! command -v claude >/dev/null 2>&1; then
+  echo "[entrypoint.d] Installing @anthropic-ai/claude-code..."
+  /usr/bin/npm install -g @anthropic-ai/claude-code@latest
 fi
 
 # Ensure pi-claude-code extension is installed globally in Pi

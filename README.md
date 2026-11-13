@@ -30,7 +30,7 @@ Authenticate the Claude Code CLI inside the `pi` service:
 ddev pi-claude-login
 ```
 
-Follow the browser prompt to log in with your Anthropic/Claude account. Credentials are persisted across container restarts in the project's `pi` container volume.
+Follow the browser prompt to log in with your Anthropic/Claude account. Credentials are persisted across container restarts in `.ddev/pi/claude`.
 
 ## Usage
 
@@ -41,10 +41,10 @@ Follow the browser prompt to log in with your Anthropic/Claude account. Credenti
 
 ## Configuration & Version Pinning
 
-You can specify or pin the `@anthropic-ai/claude-code` version using the `PI_CLAUDE_CODE_VERSION` environment variable in `.ddev/.env.pi-claude-code`:
+You can specify or pin the `@anthropic-ai/claude-code` version using the `PI_CLAUDE_CODE_VERSION` environment variable in `.ddev/.env.pi`:
 
 ```bash
-ddev dotenv set .ddev/.env.pi-claude-code --pi-claude-code-version="0.2.29"
+ddev dotenv set .ddev/.env.pi --pi-claude-code-version="2.1.322"
 ddev restart && ddev start --profiles=pi
 ```
 
