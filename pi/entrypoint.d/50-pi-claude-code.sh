@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#ddev-generated
 set -euo pipefail
 
 TARGET_VERSION="${PI_CLAUDE_CODE_VERSION:-latest}"
