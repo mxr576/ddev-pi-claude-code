@@ -4,14 +4,6 @@
 # Documentation https://bats-core.readthedocs.io/en/stable/
 # Bats libraries documentation https://github.com/ztombol/bats-docs
 
-# For local tests, install bats-core, bats-assert, bats-file, bats-support
-# And run this in the add-on root directory:
-#   bats ./tests/test.bats
-# To exclude release tests:
-#   bats ./tests/test.bats --filter-tags '!release'
-# For debugging:
-#   bats ./tests/test.bats --show-output-of-passing-tests --verbose-run --print-output-on-failure
-
 setup() {
   set -eu -o pipefail
 
@@ -40,24 +32,36 @@ setup() {
 }
 
 health_checks() {
-  # Do something useful here that verifies the add-on
-
-  # You can check for specific information in headers:
-  # run curl -sfI https://${PROJNAME}.ddev.site
-  # assert_output --partial "HTTP/2 200"
-  # assert_output --partial "test_header"
-
-  # Or check if some command gives expected output:
-  DDEV_DEBUG=true run ddev launch
+  # Start profile-gated pi container
+  run ddev start -y --profiles=pi
   assert_success
-  assert_output --partial "FULLURL https://${PROJNAME}.ddev.site"
+
+  # Check that claude binary is installed and executable
+  run ddev exec -s pi claude --version
+  assert_success
+
+  # Check that pi-claude-code extension is installed in Pi
+  run ddev exec -s pi pi list
+  assert_success
+  assert_output --partial "pi-claude-code"
+
+  # Verify telemetry and auto-updater environment variables
+  run ddev exec -s pi printenv DISABLE_TELEMETRY
+  assert_success
+  assert_output "1"
+
+  run ddev exec -s pi printenv CLAUDE_CODE_ENABLE_TELEMETRY
+  assert_success
+  assert_output "0"
+
+  run ddev exec -s pi printenv DISABLE_AUTOUPDATER
+  assert_success
+  assert_output "1"
 }
 
 teardown() {
   set -eu -o pipefail
   ddev delete -Oy "${PROJNAME}" >/dev/null 2>&1
-  # Persist TESTDIR if running inside GitHub Actions. Useful for uploading test result artifacts
-  # See example at https://github.com/ddev/github-action-add-on-test#preserving-artifacts
   if [ -n "${GITHUB_ENV:-}" ]; then
     [ -e "${GITHUB_ENV:-}" ] && echo "TESTDIR=${HOME}/tmp/${PROJNAME}" >> "${GITHUB_ENV}"
   else

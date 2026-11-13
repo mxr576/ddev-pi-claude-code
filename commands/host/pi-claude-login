@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+#ddev-generated
+## Description: Authenticate Claude Code CLI inside the Pi container
+## Usage: pi-claude-login
+## ExecRaw: true
+
+ddev exec -s pi claude auth login "$@"

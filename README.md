@@ -7,41 +7,52 @@
 
 ## Overview
 
-This add-on integrates Pi Claude Code into your [DDEV](https://ddev.com/) project.
+This DDEV add-on integrates [pi-claude-code](https://github.com/earendil-works/pi-claude-code) into your DDEV project's [ddev-pi](https://github.com/mxr576/ddev-pi) environment, allowing you to use your Claude subscription directly within the Pi Coding Agent.
+
+## Dependencies
+
+This add-on extends [mxr576/ddev-pi](https://github.com/mxr576/ddev-pi). `ddev-pi` will be installed automatically if not already present.
 
 ## Installation
 
 ```bash
 ddev add-on get mxr576/ddev-pi-claude-code
-ddev restart
+ddev restart && ddev start --profiles=pi
 ```
 
 After installation, make sure to commit the `.ddev` directory to version control.
+
+## Authentication
+
+Authenticate the Claude Code CLI inside the `pi` service:
+
+```bash
+ddev pi-claude-login
+```
+
+Follow the browser prompt to log in with your Anthropic/Claude account. Credentials are persisted across container restarts in the project's `pi` container volume.
 
 ## Usage
 
 | Command | Description |
 | ------- | ----------- |
-| `ddev describe` | View service status and used ports for Pi Claude Code |
-| `ddev logs -s pi-claude-code` | Check Pi Claude Code logs |
+| `ddev pi-claude-login` | Authenticate Claude Code CLI in the `pi` container |
+| `ddev pi` | Launch interactive Pi Coding Agent session with `pi-claude-code` enabled |
 
-## Advanced Customization
+## Configuration & Version Pinning
 
-To change the Docker image:
+You can specify or pin the `@anthropic-ai/claude-code` version using the `PI_CLAUDE_CODE_VERSION` environment variable in `.ddev/.env.pi-claude-code`:
 
 ```bash
-ddev dotenv set .ddev/.env.pi-claude-code --pi-claude-code-docker-image="ddev/ddev-utilities:latest"
-ddev add-on get mxr576/ddev-pi-claude-code
-ddev restart
+ddev dotenv set .ddev/.env.pi-claude-code --pi-claude-code-version="0.2.29"
+ddev restart && ddev start --profiles=pi
 ```
 
-Make sure to commit the `.ddev/.env.pi-claude-code` file to version control.
+All customization options:
 
-All customization options (use with caution):
-
-| Variable | Flag | Default |
-| -------- | ---- | ------- |
-| `PI_CLAUDE_CODE_DOCKER_IMAGE` | `--pi-claude-code-docker-image` | `ddev/ddev-utilities:latest` |
+| Variable | Flag | Default | Description |
+| -------- | ---- | ------- | ----------- |
+| `PI_CLAUDE_CODE_VERSION` | `--pi-claude-code-version` | `latest` | Version of `@anthropic-ai/claude-code` npm package to install |
 
 ## Credits
 

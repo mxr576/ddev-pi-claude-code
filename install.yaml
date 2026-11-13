@@ -1,6 +1,11 @@
 name: pi-claude-code
+ddev_version_constraint: '>= v1.25.2'
+dependencies:
+  - mxr576/ddev-pi
 
 project_files:
   - docker-compose.pi-claude-code.yaml
-
-ddev_version_constraint: '>= v1.24.10'
+  - commands/host/pi-claude-login
+  - pi/build.d/50-claude-code.sh
+  - pi/entrypoint.d/50-pi-claude-code.sh
+global_files: []
